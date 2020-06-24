@@ -420,10 +420,10 @@
     "@ethersproject/properties" "^5.0.0"
     "@ethersproject/strings" "^5.0.0"
 
-"@openzeppelin/contracts@^2.5.1":
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-2.5.1.tgz#c76e3fc57aa224da3718ec351812a4251289db31"
-  integrity sha512-qIy6tLx8rtybEsIOAlrM4J/85s2q2nPkDqj/Rx46VakBZ0LwtFhXIVub96LXHczQX0vaqmAueDqNPXtbSXSaYQ==
+"@openzeppelin/contracts@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.0.2.tgz#7f3e7f234b8d3f1ad818581c71b6cccc7fdc35f5"
+  integrity sha512-eK9F3jEbjQeRYLiqrHUrXCZBxE+7L4Ve5scYInsLezuasoFkrrEFlnDWD8gbN+6e5NgdgJP9fTWxjxWmaHh7dA==
 
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"

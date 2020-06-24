@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit",
     "lint": "yarn lint:ts && yarn lint:sol",
     "lint:ts": "eslint --ext .ts test",
-    "lint:sol": "solium -d contracts",
+    "lint:sol": "solium --no-soliumignore --dir contracts",
     "lint:fix": "yarn lint:ts --fix && yarn lint:sol --fix"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^2.5.1"
+    "@openzeppelin/contracts": "^3.0.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
