@@ -3,7 +3,22 @@
     "es6": true
   },
   "extends": [
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "test/**/*.{js,ts,tsx}"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "no-unused-expressions": "off"
+      }
+    }
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -154,6 +169,21 @@
       "error",
       "^(err|error)$"
     ],
+    "import/extensions": [
+      "error",
+      "never"
+    ],
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-default-export": "error",
+    "import/no-extraneous-dependencies": "error",
+    "import/no-useless-path-segments": "error",
+    "import/order": [
+      "error",
+      {
+        "newlines-between": "never"
+      }
+    ],
     "indent": "off",
     "key-spacing": [
       "error",
@@ -303,6 +333,15 @@
       }
     ],
     "no-regex-spaces": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          "dist",
+          "ethers/*"
+        ]
+      }
+    ],
     "no-return-assign": [
       "error",
       "except-parens"
@@ -329,15 +368,6 @@
     "no-unreachable": "error",
     "no-unsafe-finally": "error",
     "no-unsafe-negation": "error",
-    "no-restricted-imports": [
-      "error",
-      {
-        "patterns": [
-          "dist",
-          "ethers/*"
-        ]
-      }
-    ],
     "no-use-before-define": [
       "error",
       {
@@ -426,8 +456,8 @@
       "error",
       {
         "anonymous": "always",
-        "named": "never",
-        "asyncArrow": "always"
+        "asyncArrow": "always",
+        "named": "never"
       }
     ],
     "space-in-parens": [
@@ -506,17 +536,5 @@
       "error",
       "never"
     ]
-  },
-  "overrides": [
-    {
-      "files": [
-        "test/**/*.{js,ts,tsx}"
-      ],
-      "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "no-unused-expressions": "off"
-      }
-    }
-  ]
+  }
 }

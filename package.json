@@ -3,17 +3,21 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prebuild": "rimraf build",
-    "build": "waffle",
+    "build": "waffle waffle-solcjs.json",
+    "build:native": "waffle waffle-native.json",
     "test": "mocha",
     "typecheck": "tsc --noEmit",
     "lint": "yarn lint:ts && yarn lint:sol",
     "lint:ts": "eslint --ext .ts test",
     "lint:sol": "solium --no-soliumignore --dir contracts",
-    "lint:fix": "yarn lint:ts --fix && yarn lint:sol --fix"
+    "lint:fix": "yarn lint:ts --fix && yarn lint:sol --fix",
+    "clean": "rimraf build",
+    "prebuild": "yarn clean",
+    "prebuild:native": "yarn clean"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.0.2"
+    "@openzeppelin/contracts": "^3.0.2",
+    "ethers": "^5.0.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
@@ -24,6 +28,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "eslint": "^7.3.0",
+    "eslint-plugin-import": "^2.21.2",
     "ethereum-waffle": "^3.0.0",
     "ethlint": "^1.2.5",
     "mocha": "^8.0.1",

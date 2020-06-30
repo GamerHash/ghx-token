@@ -1,0 +1,5 @@
+{
+  "compilerType": "native",
+  "sourceDirectory": "./contracts",
+  "outputDirectory": "./build"
+}

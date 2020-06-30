@@ -6,16 +6,16 @@ import GamerCoin from '../build/GamerCoin.json'
 describe('GamerCoin', () => {
   const totalTokens = utils.parseEther(`${880_000_000}`)
 
-  let wallet: Wallet
+  let deployer: Wallet
   let token: Contract
 
-  async function fixture([wallet]: Wallet[]) {
-    token = await deployContract(wallet, GamerCoin, [totalTokens])
-    return {wallet, token}
+  async function fixture([deployer]: Wallet[]) {
+    token = await deployContract(deployer, GamerCoin, [totalTokens])
+    return {deployer, token}
   }
 
   beforeEach(async () => {
-    ({wallet, token} = await loadFixture(fixture))
+    ({deployer, token} = await loadFixture(fixture))
   })
 
   describe('constructor', () => {
@@ -25,7 +25,7 @@ describe('GamerCoin', () => {
     })
 
     it('transfers initial balance to correct address', async () => {
-      await expect(token.balanceOf(wallet.address)).to.eventually.eq(totalTokens)
+      await expect(token.balanceOf(deployer.address)).to.eventually.eq(totalTokens)
     })
   })
 })
