@@ -3,17 +3,21 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "waffle waffle-solcjs.json",
-    "build:native": "waffle waffle-native.json",
+    "build": "yarn compile && tsc -p tsconfig.build.json",
+    "deploy": "ts-node src/index.ts",
+    "compile": "waffle waffle-solcjs.json",
+    "compile:native": "waffle waffle-native.json",
     "test": "mocha",
     "typecheck": "tsc --noEmit",
     "lint": "yarn lint:ts && yarn lint:sol",
     "lint:ts": "eslint --ext .ts test",
     "lint:sol": "solium --no-soliumignore --dir contracts",
     "lint:fix": "yarn lint:ts --fix && yarn lint:sol --fix",
-    "clean": "rimraf build",
+    "clean": "rimraf build dist",
+    "clean:contracts": "rimraf build",
     "prebuild": "yarn clean",
-    "prebuild:native": "yarn clean"
+    "precompile": "yarn clean:contracts",
+    "precompile:native": "yarn clean:contracts"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^3.0.2",
@@ -23,6 +27,7 @@
     "@types/chai": "^4.2.11",
     "@types/chai-as-promised": "^7.1.2",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^10.17.26",
     "@typescript-eslint/eslint-plugin": "^3.3.0",
     "@typescript-eslint/parser": "^3.3.0",
     "chai": "^4.2.0",

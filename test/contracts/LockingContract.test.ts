@@ -1,11 +1,11 @@
 import {constants, Contract, utils, Wallet} from 'ethers'
 import {deployContract, loadFixture, MockProvider} from 'ethereum-waffle'
 import {expect} from 'chai'
-import GamerCoin from '../build/GamerCoin.json'
-import LockingContract from '../build/LockingContract.json'
-import {GREGORIAN_YEAR} from './utils/timeConstants'
-import {skippableBeforeEach} from './utils/skippableHooks'
-import {increaseTime} from './utils/timeTravel'
+import GamerCoin from '../../build/GamerCoin.json'
+import LockingContract from '../../build/LockingContract.json'
+import {GREGORIAN_YEAR} from '../utils/timeConstants'
+import {skippableBeforeEach} from '../utils/skippableHooks'
+import {increaseTime} from '../utils/timeTravel'
 
 describe('LockingContract', () => {
   const totalTokens = utils.parseEther(`${880_000_000}`)

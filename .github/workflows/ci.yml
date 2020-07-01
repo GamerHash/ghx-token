@@ -22,7 +22,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build contracts
+      - name: Build contracts and src
         run: yarn build
       - name: Typecheck tests
         run: yarn typecheck
@@ -49,7 +49,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build contracts
-        run: yarn build
+      - name: Compile contracts
+        run: yarn compile
       - name: Run lint script
         run: yarn lint

@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {Contract, utils, Wallet} from 'ethers'
 import {deployContract, loadFixture} from 'ethereum-waffle'
-import GamerCoin from '../build/GamerCoin.json'
+import GamerCoin from '../../build/GamerCoin.json'
 
 describe('GamerCoin', () => {
   const totalTokens = utils.parseEther(`${880_000_000}`)
