@@ -23,7 +23,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(132_000_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: GREGORIAN_YEAR,
         cliffAmount: parseTokens(13_200_000),
         numSteps: 18,
@@ -36,7 +36,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(44_000_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 30 * DAY,
         cliffAmount: parseTokens(1_760_000),
         numSteps: 32,
@@ -49,7 +49,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(123_200_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: GREGORIAN_YEAR,
         cliffAmount: parseTokens(30_800_000),
         numSteps: 3,
@@ -62,7 +62,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(35_200_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 90 * DAY,
         cliffAmount: parseTokens(8_800_000),
         numSteps: 3,
@@ -75,7 +75,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(105_600_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 30 * DAY,
         cliffAmount: parseTokens(10_560_000),
         numSteps: 5,
@@ -88,7 +88,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(35_200_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 90 * DAY,
         cliffAmount: parseTokens(8_800_000),
         numSteps: 3,
@@ -101,7 +101,7 @@ export const deployConfig: DeploymentParams = {
       lockedAmount: parseTokens(44_000_000),
       beneficiaryAddress: Wallet.createRandom().address,
       releaseSchedule: {
-        start: currentTimeSeconds() + HOUR,
+        startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 2 * GREGORIAN_YEAR,
         cliffAmount: parseTokens(22_000_000),
         numSteps: 1,

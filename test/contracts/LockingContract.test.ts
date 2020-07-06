@@ -56,57 +56,65 @@ describe('LockingContract', () => {
   const stepAmount = lockedTokens.mul(2).div(10)
 
   describe('lockTokens', () => {
-    let start: number
+    let startTime: number
 
     beforeEach(async () => {
       await token.approve(lockingContract.address, lockedTokens)
       const latestBlock = await deployer.provider.getBlock('latest')
-      start = latestBlock.timestamp
+      startTime = latestBlock.timestamp
     })
 
     it('transfers tokens to LockingContract', async () => {
-      await lockingContract.lockTokens(start, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
       await expect(token.balanceOf(lockingContract.address)).to.eventually.eq(lockedTokens)
     })
 
     it('emits TokensLocked event and prevents future calls', async () => {
-      await expect(lockingContract.lockTokens(start, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount))
-        .to.emit(lockingContract, 'TokensLocked')
+      await expect(
+        lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount),
+      ).to.emit(lockingContract, 'TokensLocked')
 
       await expect(
-        lockingContract.lockTokens(start, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount, overrides),
+        lockingContract.lockTokens(
+          startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount, overrides,
+        ),
       ).to.be.revertedWith('already locked')
     })
 
     it('can only be called by deployer', async () => {
       const contract = lockingContract.connect(beneficiary)
       await expect(
-        contract.lockTokens(start, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount, overrides),
+        contract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount, overrides),
       ).to.be.revertedWith('caller is not the owner')
     })
 
     it('validates input arguments', async () => {
-      const badStart = start - 2 * GREGORIAN_YEAR
+      const badStartTime = startTime - 2 * GREGORIAN_YEAR
       await expect(
-        lockingContract.lockTokens(badStart, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount, overrides),
+        lockingContract.lockTokens(
+          badStartTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount, overrides,
+        ),
       ).to.be.revertedWith('cliff end time is before current time')
 
       await expect(
-        lockingContract.lockTokens(start + 30, 0, cliffAmount, numSteps, stepDuration, stepAmount, overrides),
+        lockingContract.lockTokens(startTime + 30, 0, cliffAmount, numSteps, stepDuration, stepAmount, overrides),
       ).to.be.revertedWith('cliffDuration is 0')
 
-      await expect(lockingContract.lockTokens(start, cliffDuration, 0, numSteps, stepDuration, stepAmount, overrides))
-        .to.be.revertedWith('cliffAmount is 0')
+      await expect(
+        lockingContract.lockTokens(startTime, cliffDuration, 0, numSteps, stepDuration, stepAmount, overrides),
+      ).to.be.revertedWith('cliffAmount is 0')
 
       await expect(
-        lockingContract.lockTokens(start, cliffDuration, cliffAmount, 0, stepDuration, stepAmount, overrides),
+        lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, 0, stepDuration, stepAmount, overrides),
       ).to.be.revertedWith('numSteps is 0')
 
-      await expect(lockingContract.lockTokens(start, cliffDuration, cliffAmount, numSteps, 0, stepAmount, overrides))
-        .to.be.revertedWith('stepDuration is 0')
+      await expect(lockingContract.lockTokens(
+        startTime, cliffDuration, cliffAmount, numSteps, 0, stepAmount, overrides),
+      ).to.be.revertedWith('stepDuration is 0')
 
-      await expect(lockingContract.lockTokens(start, cliffDuration, cliffAmount, numSteps, stepDuration, 0, overrides))
-        .to.be.revertedWith('stepAmount is 0')
+      await expect(
+        lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, 0, overrides),
+      ).to.be.revertedWith('stepAmount is 0')
     })
   })
 
@@ -116,8 +124,8 @@ describe('LockingContract', () => {
     skippableBeforeEach(async function () {
       await token.approve(lockingContract.address, lockedTokens)
       const latestBlock = await provider.getBlock('latest')
-      const start = latestBlock.timestamp
-      await lockingContract.lockTokens(start, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+      const startTime = latestBlock.timestamp
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
       asBeneficiary = lockingContract.connect(beneficiary)
     })
 
@@ -253,6 +261,37 @@ describe('LockingContract', () => {
       await increaseTime(provider, stepDuration)
       await expect(asBeneficiary.releaseTokens(overrides))
         .to.be.revertedWith('all tokens released')
+    })
+  })
+
+  describe('releasableAmount', () => {
+    let asBeneficiary: Contract
+
+    beforeEach(async () => {
+      await token.approve(lockingContract.address, lockedTokens)
+      const latestBlock = await provider.getBlock('latest')
+      const startTime = latestBlock.timestamp
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+      asBeneficiary = lockingContract.connect(beneficiary)
+    })
+
+    it('returns amount of tokens that can be released', async () => {
+      await expect(lockingContract.releasableAmount()).to.eventually.eq(0)
+
+      await increaseTime(provider, cliffDuration)
+      await expect(lockingContract.releasableAmount()).to.eventually.eq(cliffAmount)
+
+      await increaseTime(provider, stepDuration)
+      await expect(lockingContract.releasableAmount()).to.eventually.eq(cliffAmount.add(stepAmount))
+    })
+
+    it('takes into account already released tokens', async () => {
+      await increaseTime(provider, cliffDuration)
+      await asBeneficiary.releaseTokens()
+      await expect(lockingContract.releasableAmount()).to.eventually.eq(0)
+
+      await increaseTime(provider, stepDuration)
+      await expect(lockingContract.releasableAmount()).to.eventually.eq(stepAmount)
     })
   })
 })

@@ -21,7 +21,7 @@ describe('deployGamerCoin', () => {
         lockedAmount: utils.parseEther(`${132_000_000}`),
         beneficiaryAddress: teamBeneficiary.address,
         releaseSchedule: {
-          start: currentTimeSeconds() + HOUR,
+          startTime: currentTimeSeconds() + HOUR,
           cliffDuration: GREGORIAN_YEAR,
           cliffAmount: utils.parseEther(`${13_200_000}`),
           numSteps: 18,
@@ -34,7 +34,7 @@ describe('deployGamerCoin', () => {
         lockedAmount: utils.parseEther(`${105_600_000}`),
         beneficiaryAddress: ecosystemBeneficiary.address,
         releaseSchedule: {
-          start: currentTimeSeconds() + HOUR,
+          startTime: currentTimeSeconds() + HOUR,
           cliffDuration: 30 * DAY,
           cliffAmount: utils.parseEther(`${10_560_000}`),
           numSteps: 5,

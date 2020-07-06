@@ -25,7 +25,7 @@ export interface PoolParams {
 }
 
 export interface ReleaseParams {
-  start: number,
+  startTime: number,
   cliffDuration: number,
   cliffAmount: BigNumber,
   numSteps: number,

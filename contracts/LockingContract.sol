@@ -19,7 +19,7 @@ contract LockingContract is Ownable, Lockable {
     address private _beneficiary;
     uint256 private _releasedAmount;
 
-    uint256 private _start;
+    uint256 private _startTime;
     uint256 private _cliffDuration;
     uint256 private _cliffAmount;
     uint256 private _numSteps;
@@ -39,7 +39,7 @@ contract LockingContract is Ownable, Lockable {
     }
 
     function lockTokens(
-        uint256 start,
+        uint256 startTime,
         uint256 cliffDuration,
         uint256 cliffAmount,
         uint256 numSteps,
@@ -47,35 +47,57 @@ contract LockingContract is Ownable, Lockable {
         uint256 stepAmount
     ) public onlyOwner whenNotLocked
     {
-        require(start.add(cliffDuration) > now, "LockingContract: cliff end time is before current time");
+        require(startTime.add(cliffDuration) > now, "LockingContract: cliff end time is before current time");
         require(cliffDuration > 0, "LockingContract: cliffDuration is 0");
         require(cliffAmount > 0, "LockingContract: cliffAmount is 0");
         require(numSteps > 0, "LockingContract: numSteps is 0");
         require(stepDuration > 0, "LockingContract: stepDuration is 0");
         require(stepAmount > 0, "LockingContract: stepAmount is 0");
 
-        _start = start;
+        _startTime = startTime;
         _cliffDuration = cliffDuration;
         _cliffAmount = cliffAmount;
         _numSteps = numSteps;
         _stepDuration = stepDuration;
         _stepAmount = stepAmount;
 
-        _token.safeTransferFrom(msg.sender, address(this), _totalAmount());
+        _token.safeTransferFrom(msg.sender, address(this), totalAmount());
         _lock();
         emit TokensLocked();
     }
 
     function releaseTokens() public onlyBeneficiary whenLocked {
-        require(_releasedAmount < _totalAmount(), "LockingContract: all tokens released");
+        require(_releasedAmount < totalAmount(), "LockingContract: all tokens released");
 
-        uint256 unlockedAmount = _unlockedAmount();
+        uint256 unlockedAmount = unlockedAmount();
         require(unlockedAmount > 0, "LockingContract: called before cliff end");
 
         uint256 releasableAmount = unlockedAmount.sub(_releasedAmount);
         require(releasableAmount > 0, "LockingContract: called before current step end");
 
-        _transferTokens(releasableAmount);
+        _releasedAmount = _releasedAmount.add(releasableAmount);
+        _token.safeTransfer(_beneficiary, releasableAmount);
+        emit TokensReleased(releasableAmount);
+    }
+
+    function totalAmount() public view returns (uint256) {
+        return _cliffAmount.add(_stepAmount.mul(_numSteps));
+    }
+
+    function unlockedAmount() public view returns (uint256) {
+        uint256 cliffEnd = _startTime.add(_cliffDuration);
+        if (now < cliffEnd) {
+            return 0;
+        } else if (now >= cliffEnd.add(_stepDuration.mul(_numSteps))) {
+            return totalAmount();
+        } else {
+            uint256 unlockedSteps = now.sub(cliffEnd).div(_stepDuration);
+            return _cliffAmount.add(_stepAmount.mul(unlockedSteps));
+        }
+    }
+
+    function releasableAmount() public view returns (uint256) {
+        return unlockedAmount().sub(_releasedAmount);
     }
 
     function token() public view returns (IERC20) {
@@ -88,27 +110,5 @@ contract LockingContract is Ownable, Lockable {
 
     function releasedAmount() public view returns (uint256) {
         return _releasedAmount;
-    }
-
-    function _totalAmount() internal view returns (uint256) {
-        return _cliffAmount.add(_stepAmount.mul(_numSteps));
-    }
-
-    function _unlockedAmount() internal view returns (uint256) {
-        uint256 cliffEnd = _start.add(_cliffDuration);
-        if (now < cliffEnd) {
-            return 0;
-        } else if (now >= cliffEnd.add(_stepDuration.mul(_numSteps))) {
-            return _totalAmount();
-        } else {
-            uint256 unlockedSteps = now.sub(cliffEnd).div(_stepDuration);
-            return _cliffAmount.add(_stepAmount.mul(unlockedSteps));
-        }
-    }
-
-    function _transferTokens(uint256 amount) internal {
-        _releasedAmount = _releasedAmount.add(amount);
-        _token.safeTransfer(_beneficiary, amount);
-        emit TokensReleased(amount);
     }
 }

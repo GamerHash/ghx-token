@@ -79,9 +79,9 @@ async function deployPoolAndLock(
   await approveResponse.wait()
   log.info('   - tokens approved')
 
-  const {start, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount} = releaseSchedule
+  const {startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount} = releaseSchedule
   const lockResponse = await lockingContract.lockTokens(
-    start,
+    startTime,
     cliffDuration,
     cliffAmount,
     numSteps,
