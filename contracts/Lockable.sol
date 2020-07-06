@@ -22,4 +22,8 @@ contract Lockable {
     function _lock() internal whenNotLocked {
         _locked = true;
     }
+
+    function _isLocked() internal view returns (bool) {
+        return _locked;
+    }
 }

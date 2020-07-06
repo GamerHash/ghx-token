@@ -95,7 +95,7 @@ describe('deployGamerCoin', () => {
     for (const {name, beneficiaryAddress} of deploymentParams.lockPools) {
       const {lockingContractAddress} = lockPools.find(pool => pool.name === name)!
       const lockingContract = new Contract(lockingContractAddress, LockingContract.abi, provider)
-      await expect(lockingContract.beneficiary()).to.eventually.eq(beneficiaryAddress)
+      await expect(lockingContract._beneficiary()).to.eventually.eq(beneficiaryAddress)
     }
   })
 

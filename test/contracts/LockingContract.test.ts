@@ -32,8 +32,8 @@ describe('LockingContract', () => {
 
   describe('constructor', () => {
     it('sets correct token and beneficiary address', async () => {
-      await expect(lockingContract.token()).to.eventually.eq(token.address)
-      await expect(lockingContract.beneficiary()).to.eventually.eq(beneficiary.address)
+      await expect(lockingContract._token()).to.eventually.eq(token.address)
+      await expect(lockingContract._beneficiary()).to.eventually.eq(beneficiary.address)
     })
 
     it('validates token and beneficiary address', async () => {
@@ -264,10 +264,16 @@ describe('LockingContract', () => {
     })
   })
 
-  describe('releasableAmount', () => {
+  describe('unlockedAmount', () => {
+    it('returns 0 before locking', async () => {
+      await expect(lockingContract.unlockedAmount()).to.eventually.eq(0)
+    })
+  })
+
+  describe('totalAmount', () => {
     let asBeneficiary: Contract
 
-    beforeEach(async () => {
+    skippableBeforeEach(async () => {
       await token.approve(lockingContract.address, lockedTokens)
       const latestBlock = await provider.getBlock('latest')
       const startTime = latestBlock.timestamp
@@ -275,7 +281,41 @@ describe('LockingContract', () => {
       asBeneficiary = lockingContract.connect(beneficiary)
     })
 
-    it('returns amount of tokens that can be released', async () => {
+    it('returns 0 before locking (skip beforeEach)', async () => {
+      await expect(lockingContract.totalAmount()).to.eventually.eq(0)
+    })
+
+    it('returns the total amount of tokens originally locked', async () => {
+      await expect(lockingContract.totalAmount()).to.eventually.eq(lockedTokens)
+    })
+
+    it('is not affected by token releases', async () => {
+      await increaseTime(provider, cliffDuration)
+      await asBeneficiary.releaseTokens()
+      await expect(lockingContract.totalAmount()).to.eventually.eq(lockedTokens)
+
+      await increaseTime(provider, stepDuration)
+      await asBeneficiary.releaseTokens()
+      await expect(lockingContract.totalAmount()).to.eventually.eq(lockedTokens)
+    })
+  })
+
+  describe('releasableAmount', () => {
+    let asBeneficiary: Contract
+
+    skippableBeforeEach(async () => {
+      await token.approve(lockingContract.address, lockedTokens)
+      const latestBlock = await provider.getBlock('latest')
+      const startTime = latestBlock.timestamp
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+      asBeneficiary = lockingContract.connect(beneficiary)
+    })
+
+    it('returns 0 before locking (skip beforeEach)', async () => {
+      await expect(lockingContract.releasableAmount()).to.eventually.eq(0)
+    })
+
+    it('returns the amount of tokens that can be released', async () => {
       await expect(lockingContract.releasableAmount()).to.eventually.eq(0)
 
       await increaseTime(provider, cliffDuration)
@@ -292,6 +332,110 @@ describe('LockingContract', () => {
 
       await increaseTime(provider, stepDuration)
       await expect(lockingContract.releasableAmount()).to.eventually.eq(stepAmount)
+    })
+  })
+
+  describe('cliffUnlockTime', () => {
+    let startTime: number
+    let asBeneficiary: Contract
+
+    skippableBeforeEach(async () => {
+      await token.approve(lockingContract.address, lockedTokens)
+      const latestBlock = await provider.getBlock('latest')
+      startTime = latestBlock.timestamp
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+      asBeneficiary = lockingContract.connect(beneficiary)
+    })
+
+    it('returns 0 before locking (skip beforeEach)', async () => {
+      await expect(lockingContract.cliffUnlockTime()).to.eventually.eq(0)
+    })
+
+    it('returns end-of-cliff time', async () => {
+      await expect(lockingContract.cliffUnlockTime()).to.eventually.eq(startTime + cliffDuration)
+    })
+
+    it('returns end-of-cliff time after this time', async () => {
+      await increaseTime(provider, cliffDuration)
+      await expect(lockingContract.cliffUnlockTime()).to.eventually.eq(startTime + cliffDuration)
+    })
+
+    it('return end-of-cliff time after releasing cliff amount', async () => {
+      await increaseTime(provider, cliffDuration)
+      await asBeneficiary.releaseTokens()
+      await expect(lockingContract.cliffUnlockTime()).to.eventually.eq(startTime + cliffDuration)
+    })
+  })
+
+  describe('stepUnlockTime', () => {
+    let startTime: number
+    let asBeneficiary: Contract
+
+    skippableBeforeEach(async () => {
+      await token.approve(lockingContract.address, lockedTokens)
+      const latestBlock = await provider.getBlock('latest')
+      startTime = latestBlock.timestamp
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+      asBeneficiary = lockingContract.connect(beneficiary)
+    })
+
+    it('returns 0 before locking (skip beforeEach)', async () => {
+      await expect(lockingContract.stepUnlockTime(1)).to.eventually.eq(0)
+    })
+
+    it('validates stepNumber', async () => {
+      await expect(lockingContract.stepUnlockTime(0)).to.be.revertedWith('stepNumber is 0')
+      await expect(lockingContract.stepUnlockTime(4)).to.be.revertedWith('stepNumber is greater than the number of steps')
+    })
+
+    it('returns end-of-step time', async () => {
+      await expect(lockingContract.stepUnlockTime(1)).to.eventually.eq(startTime + cliffDuration + stepDuration)
+      await expect(lockingContract.stepUnlockTime(2)).to.eventually.eq(startTime + cliffDuration + 2 * stepDuration)
+      await expect(lockingContract.stepUnlockTime(3)).to.eventually.eq(startTime + cliffDuration + 3 * stepDuration)
+    })
+
+    it('returns end-of-step time after this time', async () => {
+      await increaseTime(provider, cliffDuration + 2 * stepDuration)
+      await expect(lockingContract.stepUnlockTime(1)).to.eventually.eq(startTime + cliffDuration + stepDuration)
+    })
+
+    it('return end-of-step time after releasing this step amount', async () => {
+      await increaseTime(provider, cliffDuration + stepDuration)
+      await asBeneficiary.releaseTokens()
+      await expect(lockingContract.stepUnlockTime(1)).to.eventually.eq(startTime + cliffDuration + stepDuration)
+    })
+  })
+
+  describe('nextUnlockTime', () => {
+    let startTime: number
+
+    skippableBeforeEach(async () => {
+      await token.approve(lockingContract.address, lockedTokens)
+      const latestBlock = await provider.getBlock('latest')
+      startTime = latestBlock.timestamp
+      await lockingContract.lockTokens(startTime, cliffDuration, cliffAmount, numSteps, stepDuration, stepAmount)
+    })
+
+    it('returns 0 before locking (skip beforeEach)', async () => {
+      await expect(lockingContract.nextUnlockTime()).to.eventually.eq(0)
+    })
+
+    it('returns end-of-cliff time before cliff end', async () => {
+      await expect(lockingContract.nextUnlockTime()).to.eventually.eq(startTime + cliffDuration)
+    })
+
+    it('returns end-of-step times correctly', async () => {
+      await increaseTime(provider, cliffDuration)
+      await expect(lockingContract.nextUnlockTime()).to.eventually.eq(startTime + cliffDuration + stepDuration)
+      await increaseTime(provider, stepDuration)
+      await expect(lockingContract.nextUnlockTime()).to.eventually.eq(startTime + cliffDuration + 2 * stepDuration)
+      await increaseTime(provider, stepDuration)
+      await expect(lockingContract.nextUnlockTime()).to.eventually.eq(startTime + cliffDuration + 3 * stepDuration)
+    })
+
+    it('returns end-of-last-step time after all tokens have been unlocked', async () => {
+      await increaseTime(provider, cliffDuration + 3 * stepDuration)
+      await expect(lockingContract.nextUnlockTime()).to.eventually.eq(startTime + cliffDuration + 3 * stepDuration)
     })
   })
 })

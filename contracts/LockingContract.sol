@@ -15,16 +15,16 @@ contract LockingContract is Ownable, Lockable {
     event TokensLocked();
     event TokensReleased(uint256 releaseAmount);
 
-    IERC20 private _token;
-    address private _beneficiary;
-    uint256 private _releasedAmount;
+    IERC20 public _token;
+    address public _beneficiary;
+    uint256 public _releasedAmount;
 
-    uint256 private _startTime;
-    uint256 private _cliffDuration;
-    uint256 private _cliffAmount;
-    uint256 private _numSteps;
-    uint256 private _stepDuration;
-    uint256 private _stepAmount;
+    uint256 public _startTime;
+    uint256 public _cliffDuration;
+    uint256 public _cliffAmount;
+    uint256 public _numSteps;
+    uint256 public _stepDuration;
+    uint256 public _stepAmount;
 
     constructor(address token, address beneficiary) public {
         require(token != address(0), "LockingContract: token is the zero address");
@@ -100,15 +100,29 @@ contract LockingContract is Ownable, Lockable {
         return unlockedAmount().sub(_releasedAmount);
     }
 
-    function token() public view returns (IERC20) {
-        return _token;
+    function cliffUnlockTime() public view returns (uint256) {
+        return _startTime.add(_cliffDuration);
     }
 
-    function beneficiary() public view returns (address) {
-        return _beneficiary;
+    function stepUnlockTime(uint256 stepNumber) public view returns (uint256) {
+        if (!_isLocked()) {
+            return 0;
+        }
+        require(stepNumber > 0, "LockingContract: stepNumber is 0");
+        require(stepNumber <= _numSteps, "LockingContract: stepNumber is greater than the number of steps");
+        return cliffUnlockTime().add(_stepDuration.mul(stepNumber));
     }
 
-    function releasedAmount() public view returns (uint256) {
-        return _releasedAmount;
+    function nextUnlockTime() public view returns (uint256) {
+        uint256 cliffEnd = cliffUnlockTime();
+        uint256 lastStepEnd = stepUnlockTime(_numSteps);
+        if (now < cliffEnd) {
+            return cliffEnd;
+        } else if (now >= lastStepEnd) {
+            return lastStepEnd;
+        } else {
+            uint256 unlockedSteps = now.sub(cliffEnd).div(_stepDuration);
+            return stepUnlockTime(unlockedSteps.add(1));
+        }
     }
 }
