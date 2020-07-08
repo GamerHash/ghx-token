@@ -1,19 +1,21 @@
-import {utils, Wallet} from 'ethers'
 import {currentTimeSeconds} from '../test/utils/currentTimeSeconds'
 import {DAY, GREGORIAN_MONTH, GREGORIAN_YEAR, HOUR} from '../test/utils/timeConstants'
 import {DeploymentParams} from './model/DeploymentParams'
 import {parseTokens} from './utils/parseTokens'
 
-// TODO set actual beneficiary addresses
 // TODO set desired start times
-// TODO add 'Token Contributors' instant transfer?
 
 export const deployConfig: DeploymentParams = {
   totalTokenSupply: parseTokens(880_000_000),
   instantTransfers: [
     {
+      name: 'Token Sale Contributors',
+      beneficiaryAddress: '0x0fe9d1CFd4e671A36a64092bc87beFE9952eA672',
+      tokenAmount: parseTokens(322_080_000),
+    },
+    {
       name: 'Liquidity Reserve',
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0xC429A23072935c3dA626B47B57Abba3699Eab032',
       tokenAmount: parseTokens(38_720_000),
     },
   ],
@@ -21,7 +23,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Team',
       lockedAmount: parseTokens(132_000_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0xCfC99a10332D4992a9a96485a577F6c6dF77Ea98',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: GREGORIAN_YEAR,
@@ -34,7 +36,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Community & Game mining',
       lockedAmount: parseTokens(44_000_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0x96e5fc4c3B30164c9eAF5a6d8b176973995EC379',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 30 * DAY,
@@ -47,7 +49,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Foundation',
       lockedAmount: parseTokens(123_200_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0x72AE2C5A9985b5DAb9a5a6C134763Eb4247F3b6e',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: GREGORIAN_YEAR,
@@ -60,7 +62,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Advisors',
       lockedAmount: parseTokens(35_200_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0xDF6B2dDEE4FBACbdb5045327176454963c7f0069',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 90 * DAY,
@@ -73,7 +75,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Ecosystem Fund',
       lockedAmount: parseTokens(105_600_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0x7B4395Eec8Ac4196Fdd1F9C4d057Afc636deAA79',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 30 * DAY,
@@ -86,7 +88,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Marketing',
       lockedAmount: parseTokens(35_200_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0x577584EeBF32F0863202b5166c2Bb9738e1A3601',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 90 * DAY,
@@ -99,7 +101,7 @@ export const deployConfig: DeploymentParams = {
     {
       name: 'Strategic partnership',
       lockedAmount: parseTokens(44_000_000),
-      beneficiaryAddress: Wallet.createRandom().address,
+      beneficiaryAddress: '0xb1a17849627480eb750CbF9A75798C0036308c9F',
       releaseSchedule: {
         startTime: currentTimeSeconds() + HOUR,
         cliffDuration: 2 * GREGORIAN_YEAR,

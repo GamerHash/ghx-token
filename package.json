@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "build": "yarn compile && tsc -p tsconfig.build.json",
-    "deploy": "ts-node src/index.ts",
-    "compile": "waffle waffle-solcjs.json",
-    "compile:native": "waffle waffle-native.json",
+    "deploy": "node dist/src/index.js",
+    "deploy:testnet": "node dist/src/testnet/index.js",
+    "compile": "waffle waffle-solcjs.json && yarn typechain",
+    "compile:native": "waffle waffle-native.json && yarn typechain",
+    "typechain": "typechain --target ethers-v5 --outDir build 'build/*.json'",
     "test": "mocha",
     "typecheck": "tsc --noEmit",
     "lint": "yarn lint:ts && yarn lint:sol",
@@ -24,6 +26,7 @@
     "ethers": "^5.0.1"
   },
   "devDependencies": {
+    "@typechain/ethers-v5": "^0.0.2",
     "@types/chai": "^4.2.11",
     "@types/chai-as-promised": "^7.1.2",
     "@types/mocha": "^7.0.2",
@@ -39,6 +42,7 @@
     "mocha": "^8.0.1",
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
+    "typechain": "^2.0.0",
     "typescript": "^3.9.5"
   }
 }

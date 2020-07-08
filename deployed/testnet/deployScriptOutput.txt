@@ -1,0 +1,33 @@
+➜  gamercoin git:(testnet-deployment) ✗ y deploy:testnet secrets/mockWallet.json
+yarn run v1.22.4
+$ node dist/src/testnet/index.js secrets/mockWallet.json
+Deployed GHX token at 0xc9a93bD0CE2e87fF128c343070BD4eb627D1119A
+Deploying "Team" lock pool...
+   - locking contract deployed at 0x39cE493b1Ef62075bf191441928b296c5Fc9aAf3
+   - tokens approved
+   - tokens locked
+Deploying "Ecosystem Fund" lock pool...
+   - locking contract deployed at 0x765bb76509b87590f5Da1C4dc7053088630f8EbD
+   - tokens approved
+   - tokens locked
+Deploying "Foundation" lock pool...
+   - locking contract deployed at 0xe4EcEce825D49297716576A75D116e6DDE368dC4
+   - tokens approved
+   - tokens locked
+Deploying "Marketing and Strategic partnership" lock pool...
+   - locking contract deployed at 0xCDFf462f408728743629a3Cb570194C7f6E29374
+   - tokens approved
+   - tokens locked
+Deploying "Community & Game mining" lock pool...
+   - locking contract deployed at 0x154616cFF414f0de18af310e46058e36D79fDa33
+   - tokens approved
+   - tokens locked
+Deploying "Advisors" lock pool...
+   - locking contract deployed at 0xeB99ED86A8130e0f8Cd09e281A4d13e38b67A4e9
+   - tokens approved
+   - tokens locked
+Doing "Token Sale Contributors" instant transfer...
+   - transaction mined, hash: 0x859d0d734e7a989b79c89e0f99702e99f22ba92c9671560e8ad46e71de0200f8
+Doing "Liquidity Reserve" instant transfer...
+   - transaction mined, hash: 0x3223382dd26dd3bc73f8e5e75e7e9956d94a62657d33cda18963324d63b6fd1d
+✨  Done in 314.81s.

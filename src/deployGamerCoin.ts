@@ -1,7 +1,8 @@
-import {BigNumber, Contract, Wallet} from 'ethers'
-import {deployContract} from 'ethereum-waffle'
-import GamerCoin from '../build/GamerCoin.json'
-import LockingContract from '../build/LockingContract.json'
+import {BigNumber, Wallet} from 'ethers'
+import {GamerCoinFactory} from '../build/GamerCoinFactory'
+import {GamerCoin} from '../build/GamerCoin'
+import {LockingContractFactory} from '../build/LockingContractFactory'
+import {LockingContract} from '../build/LockingContract'
 import {DeploymentParams, InstantParams, PoolParams} from './model/DeploymentParams'
 import {GasParams} from './model/GasParams'
 import {FilledGasParams, fillMissingWithDefaults} from './utils/fillMissingWithDefaults'
@@ -53,26 +54,29 @@ async function deployToken(
   totalTokenSupply: BigNumber,
   gasParams: GasParams,
   log: Logger,
-): Promise<Contract> {
-  const token = await deployContract(deployer, GamerCoin, [totalTokenSupply], gasParams)
+): Promise<GamerCoin> {
+  const gamerCoinFactory = new GamerCoinFactory(deployer)
+  const token = await gamerCoinFactory.deploy(totalTokenSupply, gasParams)
+  await token.deployed()
   log.info(`Deployed GHX token at ${token.address}`)
   return token
 }
 
 async function deployPoolAndLock(
   deployer: Wallet,
-  token: Contract,
+  token: GamerCoin,
   {name, beneficiaryAddress, lockedAmount, releaseSchedule}: PoolParams,
   gasParams: FilledGasParams,
   log: Logger,
-): Promise<Contract> {
+): Promise<LockingContract> {
   log.info(`Deploying "${name}" lock pool...`)
-  const lockingContract = await deployContract(
-    deployer,
-    LockingContract,
-    [token.address, beneficiaryAddress],
+  const lockingContractFactory = new LockingContractFactory(deployer)
+  const lockingContract = await lockingContractFactory.deploy(
+    token.address,
+    beneficiaryAddress,
     gasParams.lockingContractDeploy,
   )
+  await lockingContract.deployed()
   log.info(`   - locking contract deployed at ${lockingContract.address}`)
 
   const approveResponse = await token.approve(lockingContract.address, lockedAmount)
@@ -96,7 +100,7 @@ async function deployPoolAndLock(
 }
 
 async function transferTokens(
-  token: Contract,
+  token: GamerCoin,
   {beneficiaryAddress, name, tokenAmount}: InstantParams,
   gasParams: FilledGasParams,
   log: Logger,
