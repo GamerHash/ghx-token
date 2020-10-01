@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.6.0;
+pragma solidity 0.7.1;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
@@ -26,7 +26,7 @@ contract LockingContract is Ownable, Lockable {
     uint256 public _stepDuration;
     uint256 public _stepAmount;
 
-    constructor(address token, address beneficiary) public {
+    constructor(address token, address beneficiary) {
         require(token != address(0), "LockingContract: token is the zero address");
         require(beneficiary != address(0), "LockingContract: beneficiary is the zero address");
         _token = IERC20(token);
@@ -47,7 +47,7 @@ contract LockingContract is Ownable, Lockable {
         uint256 stepAmount
     ) public onlyOwner whenNotLocked
     {
-        require(startTime.add(cliffDuration) > now, "LockingContract: cliff end time is before current time");
+        require(startTime.add(cliffDuration) > block.timestamp, "LockingContract: cliff end time is before current time");
         require(cliffDuration > 0, "LockingContract: cliffDuration is 0");
         require(cliffAmount > 0, "LockingContract: cliffAmount is 0");
         require(numSteps > 0, "LockingContract: numSteps is 0");
@@ -86,12 +86,12 @@ contract LockingContract is Ownable, Lockable {
 
     function unlockedAmount() public view returns (uint256) {
         uint256 cliffEnd = _startTime.add(_cliffDuration);
-        if (now < cliffEnd) {
+        if (block.timestamp < cliffEnd) {
             return 0;
-        } else if (now >= cliffEnd.add(_stepDuration.mul(_numSteps))) {
+        } else if (block.timestamp >= cliffEnd.add(_stepDuration.mul(_numSteps))) {
             return totalAmount();
         } else {
-            uint256 unlockedSteps = now.sub(cliffEnd).div(_stepDuration);
+            uint256 unlockedSteps = block.timestamp.sub(cliffEnd).div(_stepDuration);
             return _cliffAmount.add(_stepAmount.mul(unlockedSteps));
         }
     }
@@ -116,12 +116,12 @@ contract LockingContract is Ownable, Lockable {
     function nextUnlockTime() public view returns (uint256) {
         uint256 cliffEnd = cliffUnlockTime();
         uint256 lastStepEnd = stepUnlockTime(_numSteps);
-        if (now < cliffEnd) {
+        if (block.timestamp < cliffEnd) {
             return cliffEnd;
-        } else if (now >= lastStepEnd) {
+        } else if (block.timestamp >= lastStepEnd) {
             return lastStepEnd;
         } else {
-            uint256 unlockedSteps = now.sub(cliffEnd).div(_stepDuration);
+            uint256 unlockedSteps = block.timestamp.sub(cliffEnd).div(_stepDuration);
             return stepUnlockTime(unlockedSteps.add(1));
         }
     }
