@@ -1,7 +1,7 @@
-import {currentTimeSeconds} from '../../test/utils/currentTimeSeconds'
-import {HOUR} from '../../test/utils/timeConstants'
 import {DeploymentParams} from '../model/DeploymentParams'
 import {parseTokens} from '../utils/parseTokens'
+import {currentTimeSeconds} from '../utils/currentTimeSeconds'
+import {HOUR} from '../utils/timeConstants'
 
 export const testnetConfig: DeploymentParams = {
   totalTokenSupply: parseTokens(880_000_000),

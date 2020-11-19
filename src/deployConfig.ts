@@ -1,7 +1,7 @@
-import {currentTimeSeconds} from '../test/utils/currentTimeSeconds'
-import {DAY, GREGORIAN_MONTH, GREGORIAN_YEAR, HOUR} from '../test/utils/timeConstants'
 import {DeploymentParams} from './model/DeploymentParams'
 import {parseTokens} from './utils/parseTokens'
+import {currentTimeSeconds} from './utils/currentTimeSeconds'
+import {DAY, GREGORIAN_MONTH, GREGORIAN_YEAR, HOUR} from './utils/timeConstants'
 
 // TODO set desired start times
 
