@@ -11,18 +11,18 @@ Right now, Waffle does not include a tool to generate them and for the purpose o
     ```
 2. Open file `node_modules/@ethereum-waffle/compiler/dist/cjs/compileSolcjs.js` and in `compileSolcjs` function add the following line (53rd line of the file):
 
-       ```diff
-       function compileSolcjs(config) {
-           return async function compile(sources) {
-               const solc = await loadCompiler(config);
-               const input = compilerInput_1.getCompilerInput(sources, config.compilerOptions, 'Solidity');
-       +       require('fs').writeFileSync(require('path').join(process.cwd(), 'input.json'), input)
-               const imports = findImports_1.findImports(sources);
-               const output = solc.compile(input, { imports });
-               return JSON.parse(output);
-           };
-       }
-       ```
+```diff
+function compileSolcjs(config) {
+   return async function compile(sources) {
+       const solc = await loadCompiler(config);
+       const input = compilerInput_1.getCompilerInput(sources, config.compilerOptions, 'Solidity');
++       require('fs').writeFileSync(require('path').join(process.cwd(), 'input.json'), input)
+       const imports = findImports_1.findImports(sources);
+       const output = solc.compile(input, { imports });
+       return JSON.parse(output);
+   };
+}
+```
 
 ### Generation
 1. First we will generate standard-input file for `GamerCoin` contract. In order to do this delete the other contract files: `Lockable.sol` and `LockingContract.sol` from `contracts/` directory.
