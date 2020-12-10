@@ -1,7 +1,6 @@
 import {DeploymentParams} from './model/DeploymentParams'
 import {parseTokens} from './utils/parseTokens'
-import {currentTimeSeconds} from './utils/currentTimeSeconds'
-import {DAY, GREGORIAN_MONTH, GREGORIAN_YEAR, HOUR} from './utils/timeConstants'
+import {DAY, GREGORIAN_MONTH, GREGORIAN_YEAR} from './utils/timeConstants'
 
 // this is in unix time, unix time 1609369200 is Wed Dec 30 23:00:00 UTC 2020
 // confirm with `date --date=@1609369200`
