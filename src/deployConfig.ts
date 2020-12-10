@@ -1,3 +1,4 @@
+import {utils} from 'ethers'
 import {DeploymentParams} from './model/DeploymentParams'
 import {parseTokens} from './utils/parseTokens'
 import {DAY, GREGORIAN_MONTH, GREGORIAN_YEAR} from './utils/timeConstants'
@@ -114,6 +115,9 @@ export const deployConfig: DeploymentParams = {
     },
   ],
   transactionParams: {
-    defaults: {},
+    defaults: {
+      // gas price recommended by https://ethgasstation.info/ at Thu Dec 10 19:38:32 CET 2020
+      gasPrice: utils.parseUnits('53', 'gwei'),
+    },
   },
 }
