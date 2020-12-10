@@ -98,3 +98,14 @@ Meaning of the contract fields / getter methods:
 
 Note that:
 `releasableAmount` = `unlockedAmount` - `_releasedAmount`
+
+# node version
+
+I'm using:
+
+```
+$ node --version
+v10.23.0
+```
+
+I was using v14.15.1, but `yarn` complained that it couldn't compile optional `scrypt` dependency (from the looks of it, interface in `include/node/node.h` has changed).
